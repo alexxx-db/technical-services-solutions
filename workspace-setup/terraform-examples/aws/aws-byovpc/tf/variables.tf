@@ -30,7 +30,7 @@ variable "pricing_tier" {
   default     = "PREMIUM"
   validation {
     condition     = contains(["ENTERPRISE", "PREMIUM"], var.pricing_tier)
-    error_message = "resource_prefix must be either 'ENTERPRISE' or 'PREMIUM'."
+    error_message = "pricing_tier must be either 'ENTERPRISE' or 'PREMIUM'."
   }
 }
 

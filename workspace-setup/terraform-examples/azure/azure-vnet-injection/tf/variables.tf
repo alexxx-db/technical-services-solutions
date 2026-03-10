@@ -22,7 +22,7 @@ variable "managed_resource_group_name" {
     type = string
     default     = null
     validation {
-    condition     = var.managed_resource_group_name != var.resource_group_name
+    condition     = var.managed_resource_group_name == null || var.managed_resource_group_name != var.resource_group_name
     error_message = "Managed resource group name should not be same as resource group name"
   }
 }

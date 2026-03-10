@@ -43,7 +43,11 @@ output "debug_external_location_bucket_arns" {
 
 output "s3_bucket_arns_requiring_policy_update" {
   description = "Guidance: S3 bucket ARNs backing external locations. Customers should update these bucket policies."
-  value       = distinct(values(module.workspace_credentials.external_location_bucket_arns))
+  value = distinct(values(
+    length(var.bucket_arns_override) > 0
+    ? var.bucket_arns_override
+    : module.workspace_credentials.external_location_bucket_arns
+  ))
 }
 
 output "debug" {
