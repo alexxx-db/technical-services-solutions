@@ -1,14 +1,18 @@
 terraform {
+  required_version = "~> 1.3"
+
   required_providers {
     databricks = {
       source  = "databricks/databricks"
-      version = ">=1.24.0"
+      version = "~> 1.84"
     }
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
+      version = ">= 5.0, < 7.0"
     }
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
+      version = "~> 3.0"
     }
   }
 }

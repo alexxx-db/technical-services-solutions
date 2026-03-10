@@ -1,0 +1,14 @@
+# Default owners for the entire repository
+* @databricks-solutions/shared-technical-services
+
+# Category-specific owners
+/core-platform/          @databricks-solutions/shared-technical-services
+/data-engineering/       @databricks-solutions/shared-technical-services
+/data-governance/        @databricks-solutions/shared-technical-services
+/data-warehousing/       @databricks-solutions/shared-technical-services
+/genai-ml/               @databricks-solutions/shared-technical-services
+/launch-accelerator/     @databricks-solutions/shared-technical-services
+/workspace-setup/        @databricks-solutions/shared-technical-services
+
+# CI/CD and repo configuration
+/.github/                @databricks-solutions/shared-technical-services
