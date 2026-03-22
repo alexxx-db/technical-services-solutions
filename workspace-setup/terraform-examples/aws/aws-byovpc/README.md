@@ -147,6 +147,49 @@ metastore_id   = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 metastore_name = ""  # Not required when using existing
 ```
 
+## Validation
+
+After deployment, verify the workspace was created successfully:
+
+```bash
+# Confirm no pending changes
+terraform plan
+
+# Get workspace outputs
+terraform output workspace_url
+terraform output workspace_id
+```
+
+- Open the workspace URL in a browser and verify you can log in
+- Check the AWS Console for VPC, subnets, security groups, and S3 bucket
+- Verify Unity Catalog metastore is attached in the Databricks workspace settings
+
+## Troubleshooting
+
+| Issue | Cause | Resolution |
+|-------|-------|------------|
+| `Error: Failed to create credentials` | IAM role not yet propagated | Wait 30 seconds and re-run `terraform apply` (a built-in sleep handles this, but edge cases may occur) |
+| `Error: Invalid credentials` | AWS env vars not set or expired | Re-export `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` |
+| `Error: DATABRICKS_CLIENT_ID not set` | Databricks service principal credentials missing | Export `DATABRICKS_CLIENT_ID` and `DATABRICKS_CLIENT_SECRET` |
+| `Error: The S3 bucket already exists` | Bucket name collision (globally unique) | Change `resource_prefix` to get a different random suffix |
+| VPC quota exceeded | AWS account VPC limit reached | Request a VPC limit increase or use an existing VPC |
+| Metastore already exists in region | One metastore per region per account | Use `metastore_id` to attach to the existing metastore instead |
+
+## Teardown
+
+To destroy all created resources:
+
+```bash
+terraform destroy
+```
+
+If the workspace destroy fails due to running clusters or jobs, terminate them first in the Databricks workspace UI, then re-run `terraform destroy`.
+
+For partial teardown (e.g., recreate workspace but keep VPC):
+```bash
+terraform destroy -target=databricks_mws_workspaces.this
+```
+
 ## File Structure
 
 This project uses a flat, organized structure with purpose-specific files instead of a monolithic `main.tf`:

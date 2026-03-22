@@ -3,14 +3,19 @@
 This repository deploys a Customer-managed network on Google Cloud and provisions a Databricks workspace attached to that network. It also adds a specified user to the workspace.
 
 ### Repository Structure
-- `variables.tf`: All input variable definitions
-- `versions.tf`: Terraform required providers and versions
-- `providers.tf`: Provider configuration (Google, Databricks)
-- `network.tf`: GCP VPC, subnet, router, and NAT resources
-- `databricks.tf`: Databricks MWS network, workspace, and admin user
-- `outputs.tf`: All outputs
-- `terraform.tfvars.example`: Example variable values (do not commit real secrets)
-- `service-account-impersonation.md`: Guide for GSA impersonation
+```
+gcp-byovpc-standalone/
+├── tf/
+│   ├── variables.tf              # All input variable definitions
+│   ├── versions.tf               # Terraform required providers and versions
+│   ├── providers.tf              # Provider configuration (Google, Databricks)
+│   ├── network.tf                # GCP VPC, subnet, router, and NAT resources
+│   ├── databricks.tf             # Databricks MWS network, workspace, and admin user
+│   ├── outputs.tf                # All outputs
+│   └── terraform.tfvars.example  # Example variable values (do not commit real secrets)
+├── README.md
+└── service-account-impersonation.md  # Guide for GSA impersonation
+```
 
 ### Prerequisites
 - Terraform installed (v1.3+ recommended)
@@ -100,8 +105,9 @@ subnet_cidr = "10.10.0.0/20"
 - Admin user added to the workspace
 
 ### Step-by-Step Usage
-From the repository root directory:
+From the `tf/` directory:
 ```
+cd tf/
 terraform init
 terraform validate
 terraform plan
@@ -112,8 +118,12 @@ After `apply` completes, view outputs:
 ```
 terraform output
 ```
-Key output:
+Key outputs:
 - `workspace_url`: The URL of the created Databricks workspace
+- `workspace_id`: The ID of the Databricks workspace
+- `network_id`: The Databricks MWS network configuration ID
+- `vpc_id`: The Google VPC network ID
+- `subnet_id`: The Google Compute subnetwork ID
 
 ### Troubleshooting
 - Permission errors (403): Ensure your GSA has the required roles and that the correct project is set in `gcloud`.

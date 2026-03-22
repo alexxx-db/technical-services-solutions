@@ -18,7 +18,7 @@ provider "aws" {
 # export DATABRICKS_CLIENT_SECRET=CLIENT_SECRET
 
 provider "databricks" {
-  alias      = "mws"
+  alias      = "account"
   host       = "https://accounts.cloud.databricks.com"
   account_id = var.databricks_account_id
 }

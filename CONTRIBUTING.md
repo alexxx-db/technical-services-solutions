@@ -1,129 +1,100 @@
-# Repository Structure and Guidelines Proposal
+# Contributing to Technical Services Solutions
 
-## Description
-This PR establishes the foundational structure, documentation, and contribution guidelines for the Technical Services Solutions repository. This client-facing repository will serve as a centralized hub for code examples, demos, and scripts that accelerate client implementations across Databricks solutions.
+Thank you for contributing to the Technical Services Solutions repository. This guide covers the standards and process for submitting new projects or improvements.
 
-## Category
-- [x] core-platform
-- [x] data-engineering
-- [x] data-governance
-- [x] data-warehousing  
-- [x] genai-ml
-- [x] launch-accelerator
-- [x] workspace-setup
+## Getting Started
 
-## Type of Change
-- [x] New project
-- [ ] Bug fix
-- [ ] Enhancement
-- [x] Documentation
-
-## Project Details
-**Project Name:** Repository Foundation and Guidelines
-**Purpose:** Establish consistent structure, security guidelines, and contribution processes for client-facing solutions
-**Technologies Used:** Markdown, GitHub Templates, Documentation Standards
+1. Fork and clone the repository
+2. Create a feature branch from `main` (direct commits to `main` are blocked by pre-commit hooks)
+3. Make your changes following the guidelines below
+4. Submit a pull request
 
 ## Repository Structure
-This PR introduces a standardized six-category structure:
+
+Place your project in the appropriate category directory:
 
 ```
 technical-services-solutions/
-├── core-platform/                 # Core platform configurations and utilities
-├── data-engineering/              # ETL/ELT pipelines and data processing workflows
-├── data-governance/               # Data Governance patterns and solutions
-├── data-warehousing/              # Data warehousing patterns and solutions
-├── genai-ml/                      # Machine learning and generative AI implementations
-├── launch-accelerator/            # Quick-start templates and accelerators
-└── workspace-setup/               # Workspace Setup configurations and utilities
+├── core-platform/           # Platform configs, admin, networking, cost management
+├── data-engineering/        # ETL/ELT, DLT, streaming, batch processing, orchestration
+├── data-governance/         # Unity Catalog, access controls, lineage, compliance
+├── data-warehousing/        # SQL warehouses, data modeling, migrations, BI integration
+├── genai-ml/                # Model training/serving, GenAI, RAG, MLOps
+├── launch-accelerator/      # Quickstart templates, onboarding, reference architectures
+└── workspace-setup/         # Workspace provisioning, Terraform IaC examples
 ```
 
-## Key Features
+## Naming Conventions
 
-### 📋 Documentation Framework
-- **README.md**: Comprehensive repository overview with structure, installation guidance, and support channels
-- **CONTRIBUTING.md**: Detailed contribution guidelines with security requirements and project standards
-- Clear Regional SME support structure (AMER, APJ, EMEA)
+- Use **lowercase with hyphens** for all directory and file names
+- Terraform scenario folders: `{cloud}-{network-type}-{security-features}` (e.g., `aws-byovpc`, `azure-vnet-injection-privatelink`)
+- Be descriptive — avoid generic names like `scenario1` or `example`
 
-### 🔒 Security & Compliance Standards
-- No customer data, PII, or proprietary information
-- No credentials, tokens, or passwords
-- Synthetic data only (Faker, dbldatagen, LLAMA-4)
-- Mandatory third-party license acknowledgment
-- Peer review and SME validation requirements
+## Required Files
 
-### 📝 GitHub Templates
-- **Issue Templates**: Bug reports, feature requests, and questions with category-specific fields
-- **Pull Request Template**: Streamlined submission process with security checklists
-- **Template Configuration**: Links to Regional SME support and Databricks resources
+Every project must include:
 
-### 🏗️ Project Standards
-- Consistent naming conventions (lowercase with hyphens)
-- Standardized project structure recommendations
-- Mandatory README requirements for each project
-- Category-specific adaptations for different solution types
+| File | Purpose |
+|------|---------|
+| `README.md` | Overview, prerequisites, deployment steps, validation, troubleshooting, teardown |
+| `variables.tf` | Input variable declarations with validation rules |
+| `outputs.tf` | Output values with descriptions |
+| `versions.tf` | Terraform and provider version constraints |
+| `terraform.tfvars.example` | Example values (never commit real secrets) |
 
-## Testing
-- [x] Add Unit Testing when possible
-- [x] Code runs without errors
-- [x] Documentation is complete
-- [x] Used only synthetic data
+For Terraform projects, place all `.tf` files in a `tf/` subdirectory within the scenario folder.
 
-## Security Compliance ✅
-- [x] No customer data, PII, or proprietary information
-- [x] No credentials or access tokens
-- [x] Only synthetic data used
-- [x] Third-party licenses acknowledged
-- [x] .gitignore configured properly
+## Code Standards
 
-## Files
-**New Files Added:**
-- [x] README.md - Repository overview and structure
-- [x] CONTRIBUTING.md - Contribution guidelines and security requirements
-- [x] .gitignore - Comprehensive ignore patterns
-- [x] .github/ISSUE_TEMPLATE/bug_report.yml
-- [x] .github/ISSUE_TEMPLATE/feature_request.yml
-- [x] .github/ISSUE_TEMPLATE/question.yml
-- [x] .github/ISSUE_TEMPLATE/config.yml
-- [x] .github/pull_request_template.md
+### Terraform
+- Include **validation rules** on all input variables (region lists, CIDR format, naming patterns)
+- Add **descriptions** to all outputs
+- Use the standardized provider aliases: `account` for account-level, `workspace` for workspace-level Databricks providers
+- Pin provider versions consistently with existing scenarios (Databricks `~> 1.84`, Terraform `~> 1.3`)
+- Include inline comments explaining key decisions
+- Run `terraform fmt` before committing
 
-## Impact & Benefits
+### Documentation
+- Write clear, customer-friendly documentation
+- Include sections: Overview, Prerequisites, Authentication, Variables, Deployment, Validation, Troubleshooting, Teardown
+- Assume the reader is new to Databricks and Terraform
+- Include actual command examples
 
-### For Contributors
-- Clear guidelines for creating high-quality, client-ready solutions
-- Streamlined submission process with automated templates
-- Consistent project structure across all categories
-- Security compliance built into the workflow
+## Security Requirements
 
-### For Clients
-- Easy navigation with logical category organization
-- Consistent documentation and installation instructions
-- Quality assurance through mandatory peer review
-- Reliable support channels through Regional SMEs
+All contributions **must** comply with these requirements:
 
-### For Repository Owners
-- Automated quality control through templates
-- Clear compliance monitoring framework
-- Scalable structure for future growth
-- Reduced maintenance overhead with standardized processes
+- **No customer data, PII, or proprietary information**
+- **No credentials, tokens, or passwords** — use environment variables or `terraform.tfvars` (which is gitignored)
+- **Only synthetic data** (use Faker, dbldatagen, or similar)
+- **Acknowledge third-party licenses** in `LICENSE-THIRD-PARTY.md` if introducing new dependencies
+- **Pass all CI checks** — TruffleHog secret scanning and tfsec Terraform security scanning run automatically on PRs
 
-## Review
-- [x] Ready for technical review
-- [x] SME review needed
+## Pre-commit Hooks
 
-**Requested Reviewers:**
-- Repository owners for overall structure approval
-- Regional SMEs for support process validation
-- Security team for compliance framework review
+Install pre-commit hooks before making changes:
 
-## Next Steps
-After approval, this foundation will enable:
-1. Creation of initial project templates for each category
-2. Onboarding of the first client-facing solutions
-3. Implementation of automated compliance checks
-4. Regional SME training on support processes
+```bash
+pre-commit install
+```
 
----
+Hooks enforce: `terraform fmt`, `terraform validate`, tflint rules (naming conventions, documented variables/outputs, typed variables, required versions), license detection, private key detection, and trailing whitespace fixes.
 
-**By submitting this PR, I confirm I have followed the CONTRIBUTING.md guidelines and security requirements.**
+## Pull Request Process
 
-This PR establishes the foundation for a world-class client-facing repository that balances ease of use with enterprise security standards.
+1. Fill out the PR template completely, including the security compliance checklist
+2. Ensure all CI checks pass (terraform-lint, security-scan)
+3. Request review from the appropriate Regional SME (AMER, APJ, or EMEA)
+4. Address all review feedback before merge
+
+## Regional SME Support
+
+- **AMER** — Americas
+- **APJ** — Asia Pacific & Japan
+- **EMEA** — Europe, Middle East & Africa
+
+Contact your regional SME for guidance on contribution scope and review.
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the [Databricks License](https://databricks.com/db-license-source).

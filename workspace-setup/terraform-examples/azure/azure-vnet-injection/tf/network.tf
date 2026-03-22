@@ -42,6 +42,36 @@ resource "azurerm_network_security_group" "this" {
   tags                = var.tags
 }
 
+# Outbound to Azure Active Directory (required for workspace auth).
+resource "azurerm_network_security_rule" "aad" {
+  name                        = "${local.network_prefix}-nsgsr-aad"
+  priority                    = 200
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "VirtualNetwork"
+  destination_address_prefix  = "AzureActiveDirectory"
+  resource_group_name         = local.vnet_resource_group.name
+  network_security_group_name = azurerm_network_security_group.this.name
+}
+
+# Outbound to Azure Front Door (required for Databricks control plane).
+resource "azurerm_network_security_rule" "azfrontdoor" {
+  name                        = "${local.network_prefix}-nsgsr-afd"
+  priority                    = 201
+  direction                   = "Outbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "443"
+  source_address_prefix       = "VirtualNetwork"
+  destination_address_prefix  = "AzureFrontDoor.Frontend"
+  resource_group_name         = local.vnet_resource_group.name
+  network_security_group_name = azurerm_network_security_group.this.name
+}
+
 resource "azurerm_subnet" "public" {
   name                            = "${local.network_prefix}-public-subnet"
   resource_group_name             = local.vnet_resource_group.name

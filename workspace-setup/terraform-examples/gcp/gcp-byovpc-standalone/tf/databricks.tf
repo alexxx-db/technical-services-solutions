@@ -2,7 +2,7 @@
 # Databricks BYO VPC Network Configuration
 ######################################################
 resource "databricks_mws_networks" "databricks_network" {
-  provider     = databricks.accounts
+  provider     = databricks.account
   account_id   = var.databricks_account_id
   network_name = "dbx-nwt-${random_string.databricks_suffix.result}"
 
@@ -18,7 +18,7 @@ resource "databricks_mws_networks" "databricks_network" {
 # Databricks Workspace
 ######################################################
 resource "databricks_mws_workspaces" "databricks_workspace" {
-  provider       = databricks.accounts
+  provider       = databricks.account
   account_id     = var.databricks_account_id
   workspace_name = var.databricks_workspace_name
   location       = var.google_region

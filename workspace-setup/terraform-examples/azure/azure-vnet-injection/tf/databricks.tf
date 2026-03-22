@@ -32,12 +32,12 @@ resource "azurerm_databricks_workspace" "this" {
 # assign admin access to the workspace
 
 data "databricks_user" "workspace_access" {
-  provider  = databricks.accounts
+  provider  = databricks.account
   user_name = var.admin_user
 }
 
 resource "databricks_mws_permission_assignment" "workspace_access" {
-  provider     = databricks.accounts
+  provider     = databricks.account
   workspace_id = azurerm_databricks_workspace.this.workspace_id
   principal_id = data.databricks_user.workspace_access.id
   permissions  = ["ADMIN"]
@@ -50,7 +50,7 @@ resource "databricks_mws_permission_assignment" "workspace_access" {
 
 resource "databricks_metastore" "this" {
   count      = var.existing_metastore_id == "" ? 1 : 0
-  provider   = databricks.accounts
+  provider   = databricks.account
   name       = var.new_metastore_name
   region     = var.location
   owner      = "${var.new_metastore_name}-admins"
@@ -59,25 +59,25 @@ resource "databricks_metastore" "this" {
 
 resource "databricks_group" "metastore_owner_group" {
   count        = var.existing_metastore_id == "" ? 1 : 0
-  provider     = databricks.accounts
+  provider     = databricks.account
   display_name = "${var.new_metastore_name}-admins"
 }
 
 data "databricks_user" "metastore_owner" {
   count     = var.existing_metastore_id == "" ? 1 : 0
-  provider  = databricks.accounts
+  provider  = databricks.account
   user_name = var.admin_user
 }
 
 resource "databricks_group_member" "metastore_owner" {
   count     = var.existing_metastore_id == "" ? 1 : 0
-  provider  = databricks.accounts
+  provider  = databricks.account
   group_id  = databricks_group.metastore_owner_group[0].id
   member_id = data.databricks_user.metastore_owner[0].id
 }
 
 resource "databricks_metastore_assignment" "this" {
-  provider     = databricks.accounts
+  provider     = databricks.account
   workspace_id = azurerm_databricks_workspace.this.workspace_id
   metastore_id = var.existing_metastore_id == "" ? databricks_metastore.this[0].id : var.existing_metastore_id
 }

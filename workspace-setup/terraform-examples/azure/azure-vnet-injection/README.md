@@ -91,7 +91,7 @@ Before proceeding, ensure your VNet meets the following requirements:
 
 If you want Terraform to automatically load values for variables from a file, the file must be named either `terraform.tfvars`, `terraform.tfvars.json`, or end with `.auto.tfvars` or `.auto.tfvars.json`. If your file has a custom name (like `random_name.tfvars`), you must provide it explicitly using the `-var-file` flag when running Terraform commands.
 
-You can use the `terraform.tfvars.example` file as a base for your variables. Leter renaming this file to `terraform.tfvars` will automatically load the values for the variables.
+You can use the `terraform.tfvars.example` file as a base for your variables. Later renaming this file to `terraform.tfvars` will automatically load the values for the variables.
 
 ### List of variables
 
@@ -160,6 +160,50 @@ terraform output workspace_id
 ```
 
 Navigate to the workspace URL and log in with your Databricks credentials.
+
+## Validation
+
+After deployment, verify the workspace was created successfully:
+
+```bash
+# Confirm no pending changes
+terraform plan
+
+# Get workspace outputs
+terraform output workspace_url
+terraform output databricks_workspace_id
+```
+
+- Open the workspace URL in a browser and verify you can log in
+- Check the Azure Portal for the resource group, VNet, subnets, NSG, and NAT gateway
+- Verify the metastore is attached in the Databricks workspace settings under Data > Unity Catalog
+
+## Troubleshooting
+
+| Issue | Cause | Resolution |
+|-------|-------|------------|
+| `Error: managed_resource_group_name must differ from resource_group_name` | Same name used for both | Use a different name for `managed_resource_group_name` or set it to `null` |
+| `AuthorizationFailed` | Insufficient Azure permissions | Ensure Contributor role at the subscription level (not just resource group) |
+| `Error: creating Databricks Workspace` | Subnet delegation missing or incorrect | Verify subnets have `Microsoft.Databricks/workspaces` delegation |
+| NSG association errors | NSG not in the same resource group as VNet | Ensure `vnet_resource_group_name` is correct |
+| Metastore creation fails | Metastore already exists in the region | Use `existing_metastore_id` to attach to the existing metastore |
+| `az login` token expired | Azure CLI session timed out | Re-run `az login` to refresh credentials |
+
+## Teardown
+
+To destroy all created resources:
+
+```bash
+terraform destroy
+```
+
+If destroy fails due to resource locks or running workloads, terminate all clusters and jobs in the workspace first, then retry.
+
+For partial teardown:
+```bash
+# Destroy only the Databricks workspace (keep network resources)
+terraform destroy -target=azurerm_databricks_workspace.this
+```
 
 ## File Structure
 

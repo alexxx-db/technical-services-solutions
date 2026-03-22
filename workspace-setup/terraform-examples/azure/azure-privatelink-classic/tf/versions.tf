@@ -22,7 +22,7 @@ terraform {
     # Databricks account-level provider for NCC (serverless private endpoints).
     databricks = {
       source  = "databricks/databricks"
-      version = ">= 1.28.0, < 2.0"
+      version = "~> 1.84"
     }
     # External data source for current Azure CLI user (Owner tag).
     external = {

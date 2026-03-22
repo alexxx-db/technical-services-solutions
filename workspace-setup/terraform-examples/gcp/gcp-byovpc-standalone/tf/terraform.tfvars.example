@@ -1,0 +1,32 @@
+# =============================================================================
+# Google Cloud Configuration
+# =============================================================================
+
+# Email of the Google Service Account used for authentication
+google_service_account_email = "<sa>@<project>.iam.gserviceaccount.com"
+
+# GCP project ID where resources will be created
+google_project_name = "<project-id>"
+
+# GCP region for all resources
+google_region = "us-central1"
+
+# =============================================================================
+# Databricks Configuration
+# =============================================================================
+
+# Databricks Account ID (found in Databricks account console)
+databricks_account_id = "<account-id>"
+
+# Name for the Databricks workspace
+databricks_workspace_name = "<workspace-name>"
+
+# Admin user email (must already exist at Account level)
+databricks_admin_user = "<admin-user-email>"
+
+# =============================================================================
+# Network Configuration
+# =============================================================================
+
+# CIDR block for the Databricks subnet (minimum /26)
+subnet_cidr = "10.10.0.0/20"

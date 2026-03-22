@@ -6,21 +6,21 @@ resource "time_sleep" "wait_30_seconds" {
 }
 
 resource "databricks_mws_storage_configurations" "this" {
-  provider                   = databricks.mws
+  provider                   = databricks.account
   account_id                 = var.databricks_account_id
   storage_configuration_name = "${var.prefix}-storage"
   bucket_name                = aws_s3_bucket.root_storage_bucket.bucket
 }
 
 resource "databricks_mws_credentials" "this" {
-  provider         = databricks.mws
+  provider         = databricks.account
   role_arn         = aws_iam_role.cross_account_role.arn
   credentials_name = "${var.prefix}-creds"
   depends_on       = [time_sleep.wait_30_seconds]
 }
 
 resource "databricks_mws_workspaces" "this" {
-  provider                 = databricks.mws
+  provider                 = databricks.account
   account_id               = var.databricks_account_id
   aws_region               = var.region
   workspace_name           = var.prefix
@@ -32,7 +32,7 @@ resource "databricks_mws_workspaces" "this" {
 }
 
 resource "databricks_mws_networks" "this" {
-  provider           = databricks.mws
+  provider           = databricks.account
   account_id         = var.databricks_account_id
   network_name       = "${var.prefix}-network"
   security_group_ids = length(var.security_group_ids) > 0 ? var.security_group_ids : [module.vpc[0].default_security_group_id]
