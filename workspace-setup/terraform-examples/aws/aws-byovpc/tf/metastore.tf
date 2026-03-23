@@ -3,14 +3,15 @@ resource "databricks_metastore" "metastore" {
   provider      = databricks.account
   name          = var.metastore_name
   region        = var.region
-  force_destroy = true # This is required to destroy the metastore if it has catalogs and workspaces attached to it
+  force_destroy = var.force_destroy_metastore
 }
 
 resource "databricks_metastore_assignment" "this" {
   metastore_id = var.metastore_id == "" ? databricks_metastore.metastore[0].id : var.metastore_id
   provider     = databricks.account
   workspace_id = databricks_mws_workspaces.this.workspace_id
-  depends_on   = [databricks_mws_workspaces.this, time_sleep.wait_2_minutes]
+  # Wait for workspace API to stabilize before assigning metastore.
+  depends_on = [time_sleep.wait_2_minutes]
 }
 
 

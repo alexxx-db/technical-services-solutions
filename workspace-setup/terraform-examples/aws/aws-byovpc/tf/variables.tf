@@ -12,6 +12,10 @@ variable "prefix" {
   description = "Prefix for Databricks resource names (workspace name, storage config, etc.)"
   type        = string
   default     = "databricks-workspace"
+  validation {
+    condition     = can(regex("^[a-z0-9-]{1,50}$", var.prefix))
+    error_message = "prefix must be 1-50 characters containing only lowercase letters, numbers, and hyphens."
+  }
 }
 
 variable "resource_prefix" {
@@ -71,6 +75,10 @@ variable "vpc_cidr_range" {
   description = "CIDR range for the VPC (only used if creating new VPC)"
   type        = string
   default     = "10.0.0.0/16"
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr_range, 0))
+    error_message = "vpc_cidr_range must be a valid CIDR block (e.g., 10.0.0.0/16)."
+  }
 }
 
 variable "availability_zones" {
@@ -89,18 +97,30 @@ variable "private_subnets_cidr" {
   description = "List of private subnet CIDR blocks (only used if creating new VPC)"
   type        = list(string)
   default     = []
+  validation {
+    condition     = alltrue([for cidr in var.private_subnets_cidr : can(cidrhost(cidr, 0))])
+    error_message = "All entries in private_subnets_cidr must be valid CIDR blocks."
+  }
 }
 
 variable "public_subnets_cidr" {
   description = "List of public subnet CIDR blocks (only used if creating new VPC)"
   type        = list(string)
   default     = []
+  validation {
+    condition     = alltrue([for cidr in var.public_subnets_cidr : can(cidrhost(cidr, 0))])
+    error_message = "All entries in public_subnets_cidr must be valid CIDR blocks."
+  }
 }
 
 variable "intra_subnet_cidr" {
   description = "List of intra subnet CIDR blocks that contain the VPC endpoints (only used if creating new VPC)"
   type        = list(string)
   default     = []
+  validation {
+    condition     = alltrue([for cidr in var.intra_subnet_cidr : can(cidrhost(cidr, 0))])
+    error_message = "All entries in intra_subnet_cidr must be valid CIDR blocks."
+  }
 }
 
 # =============================================================================
@@ -135,4 +155,8 @@ variable "metastore_name" {
   default     = ""
 }
 
-
+variable "force_destroy_metastore" {
+  description = "Allow destroying the metastore even if it has catalogs and workspaces attached. WARNING: This will delete all catalogs and data."
+  type        = bool
+  default     = false
+}

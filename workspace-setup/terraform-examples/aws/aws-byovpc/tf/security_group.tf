@@ -6,7 +6,6 @@ resource "aws_vpc_security_group_egress_rule" "default_sg_egress_ports" {
   ip_protocol       = "tcp"
   cidr_ipv4         = "0.0.0.0/0"
   description       = "Allow outbound TCP traffic on port ${each.value}"
-  depends_on        = [module.vpc]
 }
 
 resource "aws_vpc_security_group_egress_rule" "default_sg_internal_tcp_egress" {
@@ -17,7 +16,6 @@ resource "aws_vpc_security_group_egress_rule" "default_sg_internal_tcp_egress" {
   from_port                    = 0
   to_port                      = 65535
   description                  = "Allow all internal TCP egress traffic"
-  depends_on                   = [module.vpc]
 }
 
 resource "aws_vpc_security_group_egress_rule" "default_sg_internal_udp_egress" {
@@ -28,7 +26,6 @@ resource "aws_vpc_security_group_egress_rule" "default_sg_internal_udp_egress" {
   from_port                    = 0
   to_port                      = 65535
   description                  = "Allow all internal UDP egress traffic"
-  depends_on                   = [module.vpc]
 }
 
 resource "aws_vpc_security_group_ingress_rule" "default_sg_self_ingress" {
@@ -37,5 +34,4 @@ resource "aws_vpc_security_group_ingress_rule" "default_sg_self_ingress" {
   referenced_security_group_id = module.vpc[0].default_security_group_id
   ip_protocol                  = "-1"
   description                  = "Allow all traffic from self"
-  depends_on                   = [module.vpc]
 }

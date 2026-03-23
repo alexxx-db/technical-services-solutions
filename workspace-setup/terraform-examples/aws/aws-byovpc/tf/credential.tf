@@ -19,4 +19,3 @@ resource "aws_iam_role_policy" "this" {
   role   = aws_iam_role.cross_account_role.id
   policy = data.databricks_aws_crossaccount_policy.this.json
 }
-

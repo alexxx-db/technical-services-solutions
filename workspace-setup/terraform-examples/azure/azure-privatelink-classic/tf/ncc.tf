@@ -86,8 +86,8 @@ locals {
     data.azapi_resource.dbfs_storage.output.properties.privateEndpointConnections,
     try(jsondecode(data.azapi_resource.dbfs_storage.output).properties.privateEndpointConnections, [])
   )
-  blob_pe_name = [for pe in local.dbfs_pe_connections : pe.name if endswith(try(pe.properties.privateEndpoint.id, ""), databricks_mws_ncc_private_endpoint_rule.dbfs_blob.endpoint_name)][0]
-  dfs_pe_name  = [for pe in local.dbfs_pe_connections : pe.name if endswith(try(pe.properties.privateEndpoint.id, ""), databricks_mws_ncc_private_endpoint_rule.dbfs_dfs.endpoint_name)][0]
+  blob_pe_name = try([for pe in local.dbfs_pe_connections : pe.name if endswith(try(pe.properties.privateEndpoint.id, ""), databricks_mws_ncc_private_endpoint_rule.dbfs_blob.endpoint_name)][0], null)
+  dfs_pe_name  = try([for pe in local.dbfs_pe_connections : pe.name if endswith(try(pe.properties.privateEndpoint.id, ""), databricks_mws_ncc_private_endpoint_rule.dbfs_dfs.endpoint_name)][0], null)
 }
 
 resource "azapi_update_resource" "ncc_pe_approve_blob" {

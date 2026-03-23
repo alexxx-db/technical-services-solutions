@@ -1,6 +1,3 @@
-data "google_client_openid_userinfo" "me" {}
-data "google_client_config" "current" {}
-
 # Random suffix for unique resource naming
 resource "random_string" "databricks_suffix" {
   special = false
@@ -36,5 +33,3 @@ resource "google_compute_router_nat" "databricks_nat" {
   nat_ip_allocate_option             = "AUTO_ONLY"
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
-
-

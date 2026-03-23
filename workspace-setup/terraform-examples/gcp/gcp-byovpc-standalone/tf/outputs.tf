@@ -17,7 +17,7 @@ output "network_id" {
 }
 
 output "vpc_id" {
-  description = "Name of the Google VPC network"
+  description = "ID of the Google VPC network"
   value       = google_compute_network.databricks_vpc.id
 }
 

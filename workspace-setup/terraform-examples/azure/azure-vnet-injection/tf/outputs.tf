@@ -2,7 +2,7 @@
 # Databricks Workspace Outputs
 # =============================================================================
 
-output "databricks_workspace_id" {
+output "workspace_id" {
   description = "ID of the Databricks workspace"
   value       = azurerm_databricks_workspace.this.id
 }
@@ -50,9 +50,12 @@ output "security_group_id" {
 # Other Azure Resources Outputs
 # =============================================================================
 
-
 output "managed_resource_group_id" {
   description = "ID of the managed resource group"
   value       = azurerm_databricks_workspace.this.managed_resource_group_id
 }
 
+output "metastore_id" {
+  description = "ID of the created or assigned Unity Catalog metastore"
+  value       = var.existing_metastore_id == "" ? databricks_metastore.this[0].id : var.existing_metastore_id
+}

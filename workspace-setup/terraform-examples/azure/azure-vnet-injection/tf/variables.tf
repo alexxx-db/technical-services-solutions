@@ -113,14 +113,26 @@ variable "cidr" {
   description = "The CIDR address of the virtual network"
   type        = string
   default     = "10.0.0.0/20"
+  validation {
+    condition     = can(cidrhost(var.cidr, 0))
+    error_message = "cidr must be a valid CIDR block (e.g., 10.0.0.0/20)."
+  }
 }
 
 variable "subnet_public_cidr" {
-  description = "The CIDR address of the first subnet"
+  description = "The CIDR address of the public (host) subnet"
   type        = string
+  validation {
+    condition     = can(cidrhost(var.subnet_public_cidr, 0))
+    error_message = "subnet_public_cidr must be a valid CIDR block."
+  }
 }
 
 variable "subnet_private_cidr" {
-  description = "The CIDR address of the second subnet"
+  description = "The CIDR address of the private (container) subnet"
   type        = string
+  validation {
+    condition     = can(cidrhost(var.subnet_private_cidr, 0))
+    error_message = "subnet_private_cidr must be a valid CIDR block."
+  }
 }

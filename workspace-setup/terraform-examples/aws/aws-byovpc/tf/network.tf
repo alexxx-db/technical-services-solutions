@@ -1,7 +1,7 @@
 module "vpc" {
   count   = var.vpc_id == "" ? 1 : 0
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.1.1"
+  version = "~> 5.1"
 
   name = "${var.resource_prefix}-classic-compute-plane-vpc"
   cidr = var.vpc_cidr_range
@@ -40,7 +40,7 @@ module "vpc_endpoints" {
   count   = var.vpc_id == "" ? 1 : 0
 
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "5.1.1"
+  version = "~> 5.1"
 
   vpc_id             = module.vpc[0].vpc_id
 
@@ -74,4 +74,3 @@ module "vpc_endpoints" {
     }
   }
 }
-

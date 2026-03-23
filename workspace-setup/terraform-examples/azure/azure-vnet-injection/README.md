@@ -171,7 +171,7 @@ terraform plan
 
 # Get workspace outputs
 terraform output workspace_url
-terraform output databricks_workspace_id
+terraform output workspace_id
 ```
 
 - Open the workspace URL in a browser and verify you can log in

@@ -13,6 +13,7 @@ resource "azurerm_resource_group" "vnet_resource_group" {
   count    = var.create_new_vnet ? 1 : 0
   name     = var.vnet_resource_group_name
   location = azurerm_resource_group.this.location
+  tags     = var.tags
 }
 
 #existing VNet resources
@@ -127,6 +128,7 @@ resource "azurerm_public_ip" "this" {
   resource_group_name = local.vnet_resource_group.name
   location            = local.vnet.location
   allocation_method   = "Static"
+  sku                 = "Standard"
   zones               = ["1"]
   tags                = var.tags
 }

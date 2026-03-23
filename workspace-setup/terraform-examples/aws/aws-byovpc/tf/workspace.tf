@@ -1,7 +1,5 @@
-resource "null_resource" "previous" {}
-
+# Brief pause to allow IAM role propagation before creating Databricks credentials.
 resource "time_sleep" "wait_30_seconds" {
-  depends_on      = [null_resource.previous]
   create_duration = "30s"
 }
 
@@ -28,7 +26,6 @@ resource "databricks_mws_workspaces" "this" {
   storage_configuration_id = databricks_mws_storage_configurations.this.storage_configuration_id
   network_id               = databricks_mws_networks.this.network_id
   pricing_tier             = var.pricing_tier
-  depends_on               = [databricks_mws_networks.this]
 }
 
 resource "databricks_mws_networks" "this" {
@@ -40,8 +37,9 @@ resource "databricks_mws_networks" "this" {
   vpc_id             = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
 }
 
+# Pause after workspace creation to allow Databricks API to stabilize
+# before metastore assignment. Needed due to eventual consistency.
 resource "time_sleep" "wait_2_minutes" {
   depends_on      = [databricks_mws_workspaces.this]
   create_duration = "120s"
 }
-

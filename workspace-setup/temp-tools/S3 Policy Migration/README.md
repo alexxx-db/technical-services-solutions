@@ -12,7 +12,7 @@ This is a small Terraform “tool” that:
 
 - Terraform installed
 - Databricks service principal credentials with access to:
-  - List external locations in the metasotre attahced to the workspace
+  - List external locations in the metastore attached to the workspace
   - Read external location definitions
 
 ## Configure
