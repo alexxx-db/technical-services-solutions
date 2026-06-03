@@ -12,10 +12,6 @@ variable "prefix" {
   description = "Prefix for Databricks resource names (workspace name, storage config, etc.)"
   type        = string
   default     = "databricks-workspace"
-  validation {
-    condition     = can(regex("^[a-z0-9-]{1,50}$", var.prefix))
-    error_message = "prefix must be 1-50 characters containing only lowercase letters, numbers, and hyphens."
-  }
 }
 
 variable "resource_prefix" {
@@ -65,20 +61,10 @@ variable "tags" {
 # Network Configuration
 # =============================================================================
 
-variable "vpc_id" {
-  description = "Existing VPC ID to use. If empty, a new VPC will be created"
-  type        = string
-  default     = ""
-}
-
 variable "vpc_cidr_range" {
-  description = "CIDR range for the VPC (only used if creating new VPC)"
+  description = "CIDR range for the VPC"
   type        = string
   default     = "10.0.0.0/16"
-  validation {
-    condition     = can(cidrhost(var.vpc_cidr_range, 0))
-    error_message = "vpc_cidr_range must be a valid CIDR block (e.g., 10.0.0.0/16)."
-  }
 }
 
 variable "availability_zones" {
@@ -87,40 +73,22 @@ variable "availability_zones" {
   default     = []
 }
 
-variable "subnet_ids" {
-  description = "Existing subnet IDs to use. If empty, new subnets will be created"
-  type        = list(string)
-  default     = []
-}
-
 variable "private_subnets_cidr" {
-  description = "List of private subnet CIDR blocks (only used if creating new VPC)"
+  description = "List of private subnet CIDR blocks"
   type        = list(string)
   default     = []
-  validation {
-    condition     = alltrue([for cidr in var.private_subnets_cidr : can(cidrhost(cidr, 0))])
-    error_message = "All entries in private_subnets_cidr must be valid CIDR blocks."
-  }
 }
 
 variable "public_subnets_cidr" {
-  description = "List of public subnet CIDR blocks (only used if creating new VPC)"
+  description = "List of public subnet CIDR blocks"
   type        = list(string)
   default     = []
-  validation {
-    condition     = alltrue([for cidr in var.public_subnets_cidr : can(cidrhost(cidr, 0))])
-    error_message = "All entries in public_subnets_cidr must be valid CIDR blocks."
-  }
 }
 
 variable "intra_subnet_cidr" {
-  description = "List of intra subnet CIDR blocks that contain the VPC endpoints (only used if creating new VPC)"
+  description = "List of intra subnet CIDR blocks that contain the VPC endpoints"
   type        = list(string)
   default     = []
-  validation {
-    condition     = alltrue([for cidr in var.intra_subnet_cidr : can(cidrhost(cidr, 0))])
-    error_message = "All entries in intra_subnet_cidr must be valid CIDR blocks."
-  }
 }
 
 # =============================================================================
@@ -139,15 +107,14 @@ variable "sg_egress_ports" {
   default     = [443, 3306, 2443, 5432, 8443, 8444, 8445, 8446, 8447, 8448, 8449, 8450, 8451]
 }
 
-variable "new_security_group_name" {
-  description = "Name for the new security group. Required when new_security_group is true."
-  type        = string
-  default     = ""
-}
-
 # =============================================================================
 # Unity Catalog Metastore Configuration
 # =============================================================================
+
+variable "aws_account_id" {
+  description = "AWS account ID where resources are deployed (used to construct IAM role ARNs for Unity Catalog)"
+  type        = string
+}
 
 variable "metastore_id" {
   description = "Existing Unity Catalog metastore ID. If empty, a new metastore will be created"
@@ -156,13 +123,31 @@ variable "metastore_id" {
 }
 
 variable "metastore_name" {
-  description = "Name for the Unity Catalog metastore (only used if creating new metastore)"
+  description = "Name for the Unity Catalog metastore. Required only when metastore_id is empty (new metastore)."
+  type        = string
+  default     = ""
+  validation {
+    condition     = var.metastore_id != "" || var.metastore_name != ""
+    error_message = "metastore_name is required when creating a new metastore (metastore_id is empty)."
+  }
+}
+# =============================================================================
+# User Defined Catalog
+# =============================================================================
+variable "catalog_name" {
+  description = "Name for the user defined catalog"
   type        = string
   default     = ""
 }
 
-variable "force_destroy_metastore" {
-  description = "Allow destroying the metastore even if it has catalogs and workspaces attached. WARNING: This will delete all catalogs and data."
-  type        = bool
-  default     = false
+variable "external_location_name" {
+  description = "Name for the user defined external location"
+  type        = string
+  default     = ""
+}
+
+variable "storage_credential_name" {
+  description = "Name for the user defined storage credential (Unity Catalog). If empty, defaults to \"{resource_prefix}-storage-credential\""
+  type        = string
+  default     = ""
 }
