@@ -1,28 +1,23 @@
-# Brief pause to allow IAM role propagation before creating Databricks credentials.
 resource "time_sleep" "wait_30_seconds" {
-<<<<<<< HEAD
-=======
-  depends_on      = [aws_iam_role.cross_account_role, aws_iam_role_policy.this]
->>>>>>> 5ae32d78b2c0b591a2deddda261fcc5354acd02c
   create_duration = "30s"
 }
 
 resource "databricks_mws_storage_configurations" "this" {
-  provider                   = databricks.account
+  provider                   = databricks.mws
   account_id                 = var.databricks_account_id
   storage_configuration_name = "${var.prefix}-storage"
   bucket_name                = aws_s3_bucket.root_storage_bucket.bucket
 }
 
 resource "databricks_mws_credentials" "this" {
-  provider         = databricks.account
+  provider         = databricks.mws
   role_arn         = aws_iam_role.cross_account_role.arn
   credentials_name = "${var.prefix}-creds"
   depends_on       = [time_sleep.wait_30_seconds]
 }
 
 resource "databricks_mws_workspaces" "this" {
-  provider                 = databricks.account
+  provider                 = databricks.mws
   account_id               = var.databricks_account_id
   aws_region               = var.region
   workspace_name           = var.prefix
@@ -30,27 +25,20 @@ resource "databricks_mws_workspaces" "this" {
   storage_configuration_id = databricks_mws_storage_configurations.this.storage_configuration_id
   network_id               = databricks_mws_networks.this.network_id
   pricing_tier             = var.pricing_tier
+  depends_on               = [databricks_mws_networks.this]
 }
 
 resource "databricks_mws_networks" "this" {
-  provider           = databricks.account
+  provider           = databricks.mws
   account_id         = var.databricks_account_id
   network_name       = "${var.prefix}-network"
-  security_group_ids = length(var.security_group_ids) > 0 ? var.security_group_ids : aws_security_group.databricks[*].id
-  subnet_ids         = length(var.subnet_ids) > 0 ? var.subnet_ids : module.vpc[0].private_subnets
-  vpc_id             = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
-
-  lifecycle {
-    precondition {
-      condition     = var.vpc_id == "" || length(var.subnet_ids) >= 2
-      error_message = "When `vpc_id` is set, `subnet_ids` must contain at least 2 subnet IDs."
-    }
-  }
+  security_group_ids = length(var.security_group_ids) > 0 ? var.security_group_ids : [module.vpc.default_security_group_id]
+  subnet_ids         = module.vpc.private_subnets
+  vpc_id             = module.vpc.vpc_id
 }
 
-# Pause after workspace creation to allow Databricks API to stabilize
-# before metastore assignment. Needed due to eventual consistency.
 resource "time_sleep" "wait_2_minutes" {
   depends_on      = [databricks_mws_workspaces.this]
   create_duration = "120s"
 }
+

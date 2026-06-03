@@ -28,27 +28,27 @@ output "workspace_status" {
 
 output "vpc_id" {
   description = "ID of the VPC used for the workspace"
-  value       = var.vpc_id == "" ? module.vpc[0].vpc_id : var.vpc_id
+  value       = module.vpc.vpc_id
 }
 
 output "private_subnet_ids" {
   description = "IDs of the private subnets"
-  value       = var.vpc_id == "" ? module.vpc[0].private_subnets : var.subnet_ids
+  value       = module.vpc.private_subnets
 }
 
 output "public_subnet_ids" {
-  description = "IDs of the public subnets (if new VPC was created)"
-  value       = var.vpc_id == "" ? module.vpc[0].public_subnets : []
+  description = "IDs of the public subnets"
+  value       = module.vpc.public_subnets
 }
 
 output "nat_gateway_ids" {
-  description = "IDs of the NAT Gateways (if new VPC was created)"
-  value       = var.vpc_id == "" ? module.vpc[0].natgw_ids : []
+  description = "IDs of the NAT Gateways"
+  value       = module.vpc.natgw_ids
 }
 
-output "security_group_ids" {
-  description = "IDs of the security groups used for the workspace"
-  value       = length(var.security_group_ids) > 0 ? var.security_group_ids : aws_security_group.databricks[*].id
+output "security_group_id" {
+  description = "ID of the security group used for the workspace"
+  value       = length(var.security_group_ids) > 0 ? var.security_group_ids[0] : module.vpc.default_security_group_id
 }
 
 # =============================================================================
@@ -82,6 +82,26 @@ output "metastore_id" {
 output "metastore_name" {
   description = "Name of the Unity Catalog metastore"
   value       = var.metastore_id == "" ? databricks_metastore.metastore[0].name : var.metastore_name
+}
+
+output "catalog_name" {
+  description = "Name of the user-defined Unity Catalog catalog"
+  value       = databricks_catalog.uc_quickstart.name
+}
+
+output "external_location_name" {
+  description = "Name of the Unity Catalog external location"
+  value       = databricks_external_location.uc_external_location.name
+}
+
+output "external_location_url" {
+  description = "URL of the Unity Catalog external location"
+  value       = databricks_external_location.uc_external_location.url
+}
+
+output "storage_credential_name" {
+  description = "Name of the Unity Catalog storage credential"
+  value       = databricks_storage_credential.uc_storage_cred.name
 }
 
 # =============================================================================
